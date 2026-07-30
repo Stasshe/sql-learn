@@ -35,6 +35,7 @@ export function VennDiagram({ type }: VennDiagramProps) {
         d={`${LEFT_CIRCLE} ${LENS}`}
         fillRule="evenodd"
         fill="hsl(var(--primary))"
+        initial={{ opacity: fill.left }}
         animate={{ opacity: fill.left }}
         transition={{ duration: 0.3 }}
       />
@@ -42,12 +43,14 @@ export function VennDiagram({ type }: VennDiagramProps) {
         d={`${RIGHT_CIRCLE} ${LENS}`}
         fillRule="evenodd"
         fill="hsl(var(--primary))"
+        initial={{ opacity: fill.right }}
         animate={{ opacity: fill.right }}
         transition={{ duration: 0.3 }}
       />
       <motion.path
         d={LENS}
         fill="hsl(var(--primary))"
+        initial={{ opacity: fill.lens }}
         animate={{ opacity: fill.lens }}
         transition={{ duration: 0.3 }}
       />

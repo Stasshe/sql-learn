@@ -71,7 +71,8 @@ export function JoinSection() {
       <section>
         <h2 className="text-2xl font-semibold mb-1">JOIN</h2>
         <p className="text-sm text-muted-foreground mb-6">
-          結合種別を切り替えると、一致した行が users / orders テーブルから飛び出して結果テーブルへ合体する。
+          結合種別を切り替えると、一致した行が users / orders
+          テーブルから飛び出して結果テーブルへ合体する。
         </p>
 
         <div className="flex flex-wrap items-start gap-8 mb-8">

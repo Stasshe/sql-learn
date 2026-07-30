@@ -56,7 +56,8 @@ export function UnionSection() {
       <section>
         <h2 className="text-2xl font-semibold mb-1">UNION</h2>
         <p className="text-sm text-muted-foreground mb-6">
-          UNIONは重複行を除いて結合し、UNION ALLは重複行もそのまま残す。切り替えると行が各テーブルから結果へ飛び込む。
+          UNIONは重複行を除いて結合し、UNION
+          ALLは重複行もそのまま残す。切り替えると行が各テーブルから結果へ飛び込む。
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
