@@ -80,17 +80,19 @@ export function UnionResultTable({ rows, justMergedKey, rowRefs }: UnionResultTa
 
       const sourceKey = row.source === "A" ? `2024-${row.row.id}` : `2025-${row.row.id}`;
       const sourceEl = rowRefs.current.get(sourceKey);
-      const sourceRect = sourceEl?.getBoundingClientRect();
+      if (!sourceEl) return;
+      const sourceRect = sourceEl.getBoundingClientRect();
       const afterRect = el.getBoundingClientRect();
-      const dx = sourceRect ? sourceRect.left - afterRect.left : 0;
-      const dy = sourceRect ? sourceRect.top - afterRect.top : -12;
+      const dx = sourceRect.left - afterRect.left;
+      const dy = sourceRect.top - afterRect.top;
 
+      // No opacity animation: the row stays fully visible for the whole
+      // flight so it reads as the source data physically moving, not fading in.
       animate(el, {
         translateX: [dx, 0],
         translateY: [dy, 0],
-        opacity: [0, 1],
-        duration: 700,
-        delay: index * 150,
+        duration: 800,
+        delay: index * 180,
         ease: "outQuad",
       });
     });

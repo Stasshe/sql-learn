@@ -31,17 +31,18 @@ function flyCellsFrom(
   sourceEl: HTMLElement | undefined,
   delay: number,
 ) {
-  if (cells.length === 0) return;
-  const sourceRect = sourceEl?.getBoundingClientRect();
+  if (cells.length === 0 || !sourceEl) return;
+  const sourceRect = sourceEl.getBoundingClientRect();
   cells.forEach((cell) => {
     const cellRect = cell.getBoundingClientRect();
-    const dx = sourceRect ? sourceRect.left - cellRect.left : 0;
-    const dy = sourceRect ? sourceRect.top - cellRect.top : -12;
+    const dx = sourceRect.left - cellRect.left;
+    const dy = sourceRect.top - cellRect.top;
+    // No opacity animation: the cell stays fully visible for the whole
+    // flight so it reads as the source data physically moving, not fading in.
     animate(cell, {
       translateX: [dx, 0],
       translateY: [dy, 0],
-      opacity: [0, 1],
-      duration: 700,
+      duration: 800,
       delay,
       ease: "outQuad",
     });
