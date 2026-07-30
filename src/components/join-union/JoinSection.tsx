@@ -12,17 +12,12 @@ import { computeJoin } from "./join-engine";
 import { SourceTables } from "./SourceTables";
 import { SqlSnippet } from "./SqlSnippet";
 import type { RowState } from "./TableGrid";
-import { useFlightVectors } from "./useFlightVectors";
 import { VennDiagram } from "./VennDiagram";
 
 export function JoinSection() {
   const [joinType, setJoinType] = useState<JoinType>("INNER");
   const containerRef = useRef<HTMLDivElement>(null);
-  const usersTableRef = useRef<HTMLDivElement>(null);
-  const ordersTableRef = useRef<HTMLDivElement>(null);
-  const resultRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef(new Map<string, HTMLTableRowElement>());
-  const flightVectors = useFlightVectors(usersTableRef, ordersTableRef, resultRef);
 
   const joinResult = useMemo(
     () =>
@@ -87,15 +82,11 @@ export function JoinSection() {
             userState={userState}
             orderState={orderState}
             registerRowRef={registerRowRef}
-            usersTableRef={usersTableRef}
-            ordersTableRef={ordersTableRef}
           />
           <ConnectorLines containerRef={containerRef} rowRefs={rowRefs} joinResult={joinResult} />
         </div>
 
-        <div ref={resultRef}>
-          <JoinResultTable rows={joinResult} flightVectors={flightVectors} />
-        </div>
+        <JoinResultTable rows={joinResult} rowRefs={rowRefs} />
       </section>
     </LayoutGroup>
   );

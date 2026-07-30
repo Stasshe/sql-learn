@@ -37,7 +37,7 @@ export function VennDiagram({ type }: VennDiagramProps) {
         fill="hsl(var(--primary))"
         initial={{ opacity: fill.left }}
         animate={{ opacity: fill.left }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.6 }}
       />
       <motion.path
         d={`${RIGHT_CIRCLE} ${LENS}`}
@@ -45,14 +45,14 @@ export function VennDiagram({ type }: VennDiagramProps) {
         fill="hsl(var(--primary))"
         initial={{ opacity: fill.right }}
         animate={{ opacity: fill.right }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.6 }}
       />
       <motion.path
         d={LENS}
         fill="hsl(var(--primary))"
         initial={{ opacity: fill.lens }}
         animate={{ opacity: fill.lens }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.6 }}
       />
       <path d={LEFT_CIRCLE} fill="none" stroke="hsl(var(--border))" strokeWidth={1.5} />
       <path d={RIGHT_CIRCLE} fill="none" stroke="hsl(var(--border))" strokeWidth={1.5} />

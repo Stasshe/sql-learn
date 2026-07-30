@@ -79,8 +79,8 @@ export function ConnectorLines({ containerRef, rowRefs, joinResult }: ConnectorL
             strokeWidth={1.5}
             initial={{ x1: line.x1, y1: line.y1, x2: line.x1, y2: line.y1, opacity: 0 }}
             animate={{ x1: line.x1, y1: line.y1, x2: line.x2, y2: line.y2, opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.15 } }}
-            transition={{ type: "spring", stiffness: 260, damping: 26 }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
+            transition={{ type: "spring", stiffness: 120, damping: 18 }}
           />
         ))}
       </AnimatePresence>

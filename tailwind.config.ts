@@ -53,7 +53,7 @@ const config: Config = {
         'pulse-slow': 'pulse 2s ease-in-out infinite',
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-in': 'slideIn 0.3s ease-out',
-        'merge-pulse': 'mergePulse 0.9s ease-out',
+        'merge-pulse': 'mergePulse 1.5s ease-out',
       },
       keyframes: {
         fadeIn: {

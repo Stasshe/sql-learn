@@ -1,11 +1,11 @@
 "use client";
 
 import { animate } from "animejs";
+import type { RefObject } from "react";
 import { useLayoutEffect, useRef, useState } from "react";
 
 import type { Customer } from "./data";
 import type { UnionRow } from "./union-engine";
-import type { FlightVectors } from "./useFlightVectors";
 
 interface DisplayRow extends UnionRow<Customer> {
   exiting?: boolean;
@@ -14,15 +14,13 @@ interface DisplayRow extends UnionRow<Customer> {
 interface UnionResultTableProps {
   rows: UnionRow<Customer>[];
   justMergedKey: string | null;
-  flightVectors: FlightVectors | null;
+  rowRefs: RefObject<Map<string, HTMLTableRowElement>>;
 }
 
-export function UnionResultTable({ rows, justMergedKey, flightVectors }: UnionResultTableProps) {
+export function UnionResultTable({ rows, justMergedKey, rowRefs }: UnionResultTableProps) {
   const [displayRows, setDisplayRows] = useState<DisplayRow[]>(rows);
   const rowElRefs = useRef(new Map<string, HTMLTableRowElement>());
   const prevRectsRef = useRef(new Map<string, DOMRect>());
-  const flightVectorsRef = useRef(flightVectors);
-  flightVectorsRef.current = flightVectors;
 
   // FLIP "first": capture current on-screen rects before the row set changes.
   useLayoutEffect(() => {
@@ -45,7 +43,6 @@ export function UnionResultTable({ rows, justMergedKey, flightVectors }: UnionRe
   // FLIP "last/invert/play" and entrance flight, driven by anime.js.
   useLayoutEffect(() => {
     const beforeRects = prevRectsRef.current;
-    const vectors = flightVectorsRef.current;
 
     displayRows.forEach((row, index) => {
       const el = rowElRefs.current.get(row.key);
@@ -56,7 +53,7 @@ export function UnionResultTable({ rows, justMergedKey, flightVectors }: UnionRe
           opacity: [1, 0],
           scale: [1, 0.9],
           translateY: [0, 8],
-          duration: 250,
+          duration: 500,
           ease: "inQuad",
           onComplete: () => {
             setDisplayRows((prev) => prev.filter((r) => r.key !== row.key));
@@ -74,24 +71,30 @@ export function UnionResultTable({ rows, justMergedKey, flightVectors }: UnionRe
           animate(el, {
             translateX: [dx, 0],
             translateY: [dy, 0],
-            duration: 400,
+            duration: 700,
             ease: "outExpo",
           });
         }
         return;
       }
 
-      const offset = vectors ? (row.source === "A" ? vectors.left : vectors.right) : null;
+      const sourceKey = row.source === "A" ? `2024-${row.row.id}` : `2025-${row.row.id}`;
+      const sourceEl = rowRefs.current.get(sourceKey);
+      const sourceRect = sourceEl?.getBoundingClientRect();
+      const afterRect = el.getBoundingClientRect();
+      const dx = sourceRect ? sourceRect.left - afterRect.left : 0;
+      const dy = sourceRect ? sourceRect.top - afterRect.top : -12;
+
       animate(el, {
-        translateX: offset ? [offset.dx, 0] : 0,
-        translateY: offset ? [offset.dy, 0] : [-10, 0],
+        translateX: [dx, 0],
+        translateY: [dy, 0],
         opacity: [0, 1],
-        duration: 500,
-        delay: index * 50,
-        ease: "outExpo",
+        duration: 700,
+        delay: index * 150,
+        ease: "outQuad",
       });
     });
-  }, [displayRows]);
+  }, [displayRows, rowRefs]);
 
   return (
     <div>
@@ -102,7 +105,7 @@ export function UnionResultTable({ rows, justMergedKey, flightVectors }: UnionRe
             <th className="text-left font-medium py-2 pr-4">id</th>
             <th className="text-left font-medium py-2 pr-4">name</th>
             <th className="text-left font-medium py-2 pr-4">city</th>
-            <th className="text-left font-medium py-2 pr-4">source</th>
+            <th className="text-left font-medium py-2 pr-4">取得元</th>
           </tr>
         </thead>
         <tbody>

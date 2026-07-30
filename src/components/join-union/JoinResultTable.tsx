@@ -1,11 +1,11 @@
 "use client";
 
-import { animate, stagger } from "animejs";
+import { animate } from "animejs";
+import type { RefObject } from "react";
 import { useLayoutEffect, useRef, useState } from "react";
 
 import type { Order, User } from "./data";
 import type { JoinedRow, MatchKind } from "./join-engine";
-import type { FlightVectors } from "./useFlightVectors";
 
 const rowBackground: Record<MatchKind, string> = {
   matched: "hsl(var(--primary) / 0.08)",
@@ -23,15 +23,35 @@ interface DisplayRow extends JoinedRow<User, Order> {
 
 interface JoinResultTableProps {
   rows: JoinedRow<User, Order>[];
-  flightVectors: FlightVectors | null;
+  rowRefs: RefObject<Map<string, HTMLTableRowElement>>;
 }
 
-export function JoinResultTable({ rows, flightVectors }: JoinResultTableProps) {
+function flyCellsFrom(
+  cells: NodeListOf<Element>,
+  sourceEl: HTMLElement | undefined,
+  delay: number,
+) {
+  if (cells.length === 0) return;
+  const sourceRect = sourceEl?.getBoundingClientRect();
+  cells.forEach((cell) => {
+    const cellRect = cell.getBoundingClientRect();
+    const dx = sourceRect ? sourceRect.left - cellRect.left : 0;
+    const dy = sourceRect ? sourceRect.top - cellRect.top : -12;
+    animate(cell, {
+      translateX: [dx, 0],
+      translateY: [dy, 0],
+      opacity: [0, 1],
+      duration: 700,
+      delay,
+      ease: "outQuad",
+    });
+  });
+}
+
+export function JoinResultTable({ rows, rowRefs }: JoinResultTableProps) {
   const [displayRows, setDisplayRows] = useState<DisplayRow[]>(rows);
   const rowElRefs = useRef(new Map<string, HTMLTableRowElement>());
   const prevRectsRef = useRef(new Map<string, DOMRect>());
-  const flightVectorsRef = useRef(flightVectors);
-  flightVectorsRef.current = flightVectors;
 
   // FLIP "first": capture current on-screen rects before the row set changes.
   useLayoutEffect(() => {
@@ -54,7 +74,6 @@ export function JoinResultTable({ rows, flightVectors }: JoinResultTableProps) {
   // FLIP "last/invert/play", entrance flight, and exit, driven by anime.js.
   useLayoutEffect(() => {
     const beforeRects = prevRectsRef.current;
-    const vectors = flightVectorsRef.current;
 
     displayRows.forEach((row, index) => {
       const el = rowElRefs.current.get(row.key);
@@ -65,7 +84,7 @@ export function JoinResultTable({ rows, flightVectors }: JoinResultTableProps) {
           opacity: [1, 0],
           scale: [1, 0.92],
           translateY: [0, 8],
-          duration: 250,
+          duration: 500,
           ease: "inQuad",
           onComplete: () => {
             setDisplayRows((prev) => prev.filter((r) => r.key !== row.key));
@@ -83,46 +102,26 @@ export function JoinResultTable({ rows, flightVectors }: JoinResultTableProps) {
           animate(el, {
             translateX: [dx, 0],
             translateY: [dy, 0],
-            duration: 420,
+            duration: 700,
             ease: "outExpo",
           });
         }
         return;
       }
 
-      animate(el, { opacity: [0, 1], duration: 150, ease: "linear" });
+      const delay = index * 180;
+      const leftSource = row.left ? rowRefs.current.get(`user-${row.left.id}`) : undefined;
+      const rightSource = row.right ? rowRefs.current.get(`order-${row.right.id}`) : undefined;
 
-      const leftCells = el.querySelectorAll('[data-side="left"]');
-      const rightCells = el.querySelectorAll('[data-side="right"]');
+      flyCellsFrom(el.querySelectorAll('[data-side="left"]'), leftSource, delay);
+      flyCellsFrom(el.querySelectorAll('[data-side="right"]'), rightSource, delay);
+
       const noneCells = el.querySelectorAll('[data-side="none"]');
-      const leftOffset = row.left && vectors ? vectors.left : null;
-      const rightOffset = row.right && vectors ? vectors.right : null;
-
-      if (leftCells.length > 0) {
-        animate(leftCells, {
-          translateX: leftOffset ? [leftOffset.dx, 0] : 0,
-          translateY: leftOffset ? [leftOffset.dy, 0] : [-10, 0],
-          opacity: [0, 1],
-          duration: 550,
-          delay: stagger(30, { start: index * 60 }),
-          ease: "outExpo",
-        });
-      }
-      if (rightCells.length > 0) {
-        animate(rightCells, {
-          translateX: rightOffset ? [rightOffset.dx, 0] : 0,
-          translateY: rightOffset ? [rightOffset.dy, 0] : [-10, 0],
-          opacity: [0, 1],
-          duration: 550,
-          delay: stagger(30, { start: index * 60 }),
-          ease: "outExpo",
-        });
-      }
       if (noneCells.length > 0) {
-        animate(noneCells, { opacity: [0, 1], duration: 300, delay: index * 60 });
+        animate(noneCells, { opacity: [0, 1], duration: 400, delay });
       }
     });
-  }, [displayRows]);
+  }, [displayRows, rowRefs]);
 
   return (
     <div>

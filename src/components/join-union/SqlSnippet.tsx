@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 
 const KEYWORD_SET = new Set([
@@ -42,17 +41,8 @@ interface SqlSnippetProps {
 
 export function SqlSnippet({ sql }: SqlSnippetProps) {
   return (
-    <AnimatePresence mode="wait">
-      <motion.pre
-        key={sql}
-        initial={{ opacity: 0, y: -4 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 4 }}
-        transition={{ duration: 0.15 }}
-        className="font-mono text-sm border-l-2 border-border pl-4 whitespace-pre-wrap"
-      >
-        {highlight(sql)}
-      </motion.pre>
-    </AnimatePresence>
+    <pre className="font-mono text-sm border-l-2 border-border pl-4 whitespace-pre-wrap">
+      {highlight(sql)}
+    </pre>
   );
 }
